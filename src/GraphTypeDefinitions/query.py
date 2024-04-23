@@ -10,11 +10,13 @@ import strawberry
 @strawberry.type(description="""Type for query root""")
 class Query:
 
-    from .externalIdGQLModel import external_ids
+    from .externalIdGQLModel import (
+        internal_id, 
+        external_ids, 
+        external_ids_page)
     external_ids = external_ids
-
-    from .externalIdGQLModel import internal_id
     internal_id = internal_id
+    external_ids_page = external_ids_page
 
     from .externalIdTypeGQLModel import externalidtype_page
     externalidtype_page = externalidtype_page

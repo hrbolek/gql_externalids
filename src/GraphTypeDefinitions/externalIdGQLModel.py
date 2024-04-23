@@ -14,9 +14,6 @@ from ._GraphResolvers import (
     resolve_lastchange,
     resolve_created,
 
-    resolve_name,
-    resolve_name_en,
-
     encapsulateInsert,
     encapsulateUpdate,
     encapsulateDelete,
@@ -47,8 +44,6 @@ class ExternalIdGQLModel:
 
     resolve_reference = resolve_reference    
     id = resolve_id
-    name = resolve_name
-    name_en = resolve_name_en
 
     lastchange = resolve_lastchange
     created = resolve_created
@@ -122,6 +117,16 @@ async def external_ids(
         rows = await loader.filter_by(inner_id=inner_id, typeid_id=typeid_id)
     return rows
     
+from src.DBResolvers import DBResolvers
+external_ids_page = strawberry.field(
+    description="returns list of externalids",
+    permission_classes=[
+        OnlyForAuthentized
+    ],
+    resolver=DBResolvers.ExternalIdModel.resolve_page(ExternalIdGQLModel, WhereFilterModel=ExternalidInputWhereFilter)
+    )
+
+
 #####################################################################
 #
 # Mutation section
