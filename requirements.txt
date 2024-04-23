@@ -15,3 +15,9 @@ click
 aiodataloader
 
 https://github.com/hrbolek/uoishelpers/archive/refs/heads/main.zip
+
+aiohttp
+requests
+pyjwt[crypto]
+prometheus-client
+prometheus_fastapi_instrumentator

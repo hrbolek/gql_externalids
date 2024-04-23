@@ -14,7 +14,7 @@ from uoishelpers.resolvers import (
 )
 from uoishelpers.resolvers import putSingleEntityToDb
 
-from gql_externalids.DBDefinitions import BaseModel
+from src.DBDefinitions import BaseModel
 
 ###########################################################################################################################
 #
@@ -22,7 +22,7 @@ from gql_externalids.DBDefinitions import BaseModel
 #
 ###########################################################################################################################
 
-from gql_externalids.DBDefinitions import ExternalIdModel, ExternalIdTypeModel
+from src.DBDefinitions import ExternalIdModel, ExternalIdTypeModel
 
 
 ###########################################################################################################################

@@ -19,8 +19,5 @@ class Query:
     from .externalIdTypeGQLModel import externalidtype_page
     externalidtype_page = externalidtype_page
 
-    from .externalIdTypeGQLModel import externalidtype_by_id
-    externalidtype_by_id = externalidtype_by_id
-
     from .externalIdCategoryGQLModel import externalidcategory_page
     externalidcategory_page = externalidcategory_page

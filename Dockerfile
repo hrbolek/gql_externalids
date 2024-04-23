@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.9-slim-buster as prepare
+FROM python:3.10.13-slim as prepare
 
 # instalace curl, aby bylo mozne zprovoznit standardni healthcheck
 RUN apt update && apt install curl -y && rm -rf /var/cache/apk/*
@@ -22,7 +22,7 @@ COPY . /app
 # FROM prepare as tester
 RUN python -m pip install coverage pytest pytest-cov
 # RUN python -m unittest tests/*
-RUN python -m pytest --cov-report term-missing --cov=gql_ug tests/*
+RUN python -m pytest --cov-report term-missing --cov=src 
 
 FROM prepare as runner
 # Creates a non-root user and adds permission to access the /app folder

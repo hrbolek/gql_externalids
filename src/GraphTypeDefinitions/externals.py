@@ -2,8 +2,8 @@ import strawberry
 from typing import List
 
 from .externalIdGQLModel import ExternalIdGQLModel
-
-def getLoaders(info):
+from ._GraphResolvers import IDType
+def getLoadersFromInfo(info):
     return info.context["all"]
 
 ###########################################################################################################################
@@ -26,10 +26,10 @@ def getLoaders(info):
 @strawberry.federation.type(extend=True, keys=["id"])
 class UserGQLModel:
 
-    id: strawberry.ID = strawberry.federation.field(external=True)
+    id: IDType = strawberry.federation.field(external=True)
 
     @classmethod
-    async def resolve_reference(cls, id: strawberry.ID):
+    async def resolve_reference(cls, id: IDType):
         if id is None:
             return None
         return UserGQLModel(id=id)
@@ -39,7 +39,7 @@ class UserGQLModel:
         self, info: strawberry.types.Info
     ) -> List["ExternalIdGQLModel"]:
 
-        loader = getLoaders(info=info).externalids_inner_id
+        loader = getLoadersFromInfo(info=info).externalids_inner_id
         result = await loader.load(self.id)    
         return result
 
@@ -47,16 +47,16 @@ class UserGQLModel:
 @strawberry.federation.type(extend=True, keys=["id"])
 class GroupGQLModel:
 
-    id: strawberry.ID = strawberry.federation.field(external=True)
+    id: IDType = strawberry.federation.field(external=True)
 
     @classmethod
-    async def resolve_reference(cls, id: strawberry.ID):
+    async def resolve_reference(cls, id: IDType):
         return GroupGQLModel(id=id)
 
     @strawberry.field(description="""All external ids related to a group""")
     async def external_ids(
         self, info: strawberry.types.Info
     ) -> List["ExternalIdGQLModel"]:
-        loader = getLoaders(info=info).externalids_inner_id
+        loader = getLoadersFromInfo(info=info).externalids_inner_id
         result = await loader.load(self.id)    
         return result

@@ -1,7 +1,7 @@
 from sqlalchemy.future import select
 import strawberry
 
-from gql_externalids.DBDefinitions import (
+from src.DBDefinitions import (
     BaseModel,
 )
 

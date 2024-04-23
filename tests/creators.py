@@ -10,7 +10,7 @@ from tests.shared import (
     createContext,
 )
 
-from gql_externalids.GraphTypeDefinitions import schema
+from src.GraphTypeDefinitions import schema
 
 def createGQLClient():
 
@@ -54,12 +54,12 @@ def compare(rowa, rowb, attributeNames, skipattributes=["lastchange", "created",
     for attName in attributeNames:
         if attName in skipattributes: continue
         
-        assert rowa[attName] == rowb[attName]
+        assert f"{rowa[attName]}" == f"{rowb[attName]}", f"not equal {rowa[attName]} != {rowb[attName]}"
     return
 
 def createByIdQuery(queryEndpoint, attributeNames=["id", "name"]):
     attlist = ' '.join(attributeNames)
-    query = "query($id: ID!){" f"{queryEndpoint}(id: $id)" "{" + attlist + "}}"
+    query = "query($id: UUID!){" f"{queryEndpoint}(id: $id)" "{" + attlist + "}}"
     return query
 
 def createPageQuery(queryEndpoint, attributeNames=["id", "name"]):
@@ -70,7 +70,7 @@ def createPageQuery(queryEndpoint, attributeNames=["id", "name"]):
 def createReferenceQuery(gqltype, attributeNames):
     attlist = ' '.join(attributeNames)
     query = (
-        'query($id: ID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
+        'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
         ' }])' +
         '{' +
         f'...on {gqltype}' + 
@@ -82,7 +82,7 @@ def createReferenceQuery(gqltype, attributeNames):
 
 def createReferenceQueryStAtts(gqltype: str):
     query = (
-        'query($id: ID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
+        'query($id: UUID!) { _entities(representations: [{ __typename: '+ f'"{gqltype}", id: $id' + 
         ' }])' +
         '{' +
         f'...on {gqltype}' + 
@@ -100,7 +100,7 @@ def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
         await prepare_demodata(async_session_maker)
 
         data = get_demodata()
-        assert data.get(tableName, None) is not None
+        assert data.get(tableName, None) is not None, f"missing table {tableName}"
         datatable = data[tableName]
         assert len(datatable) > 0
         for datarow in datatable:
@@ -113,15 +113,15 @@ def createByIdTest(tableName, queryEndpoint, attributeNames=["id", "name"]):
             # query = "query($id: ID!){" f"{queryEndpoint}(id: $id)" "{" + attlist + "}}"
 
             context_value = await createContext(async_session_maker)
-            variable_values = {"id": datarow["id"]}
+            variable_values = {"id": f'{datarow["id"]}'}
             logging.info(f"createByIdTest \n{queryEndpoint} {variable_values}\n")
             
             resp = await schema.execute(
                 query, context_value=context_value, variable_values=variable_values
             )  # , variable_values={"title": "The Great Gatsby"})
-            assert resp.errors is None
+            assert resp.errors is None, f"got errors {resp.errors}"
             respdata = resp.data[queryEndpoint]
-            assert respdata is not None
+            assert respdata is not None, f"missing data {respdata}"
 
             compare(respdata, datarow, attributeNames)
             # for attName in attributeNames:
@@ -180,7 +180,7 @@ def createPageTest(tableName, queryEndpoint, attributeNames=["id", "name"], subE
         context_value = await createContext(async_session_maker)
         resp = await schema.execute(query, context_value=context_value)
         print(resp, flush=True)
-        assert resp.errors is None
+        assert resp.errors is None, f"got errors {resp.errors}"
 
         respdata = resp.data[queryEndpoint]
         datarows = data[tableName]
@@ -232,12 +232,12 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
         query = createReferenceQuery(gqltype, attributeNames=(attributeNames + subEntities))
         query2 = createReferenceQueryStAtts(gqltype)
         for row in table:
-            rowid = row['id']
+            rowid = f"{row['id']}"
            
             variable_values = {"id": rowid}
             context_value = await createContext(async_session_maker)
             resp = await schema.execute(query, context_value=context_value, variable_values=variable_values)
-            assert resp.errors is None
+            assert resp.errors is None, f"got errors {resp.errors}"
             data = resp.data
             logging.info(data)
             data = data['_entities'][0]
@@ -248,7 +248,7 @@ def createResolveReferenceTest(tableName, gqltype, attributeNames=["id", "name"]
             variable_values = {"id": rowid}
             resp = await schema.execute(query2, context_value=context_value, variable_values=variable_values)
             print(resp, flush=True)
-            assert resp.errors is None
+            assert resp.errors is None, f"got errors {resp.errors}"
             data = resp.data
             logging.info(data)
 

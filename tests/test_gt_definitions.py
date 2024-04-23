@@ -7,7 +7,7 @@ import pytest
 
 # from ..uoishelpers.uuid import UUIDColumn
 
-from gql_externalids.GraphTypeDefinitions import schema
+from src.GraphTypeDefinitions import schema
 
 from .shared import (
     prepare_demodata,
@@ -114,7 +114,7 @@ async def test_external_ids():
     data = get_demodata()
     table = data['externalids']
     row = table[0]
-    query = '''query($id: ID!){
+    query = '''query($id: UUID!){
         externalIds(innerId: $id ) { 
             id
             innerId
@@ -122,7 +122,7 @@ async def test_external_ids():
         }
     }'''
 
-    variable_values = {"id": row['inner_id']}
+    variable_values = {"id": f"{row['inner_id']}"}
     context_value = await createContext(async_session_maker)
     resp = await schema.execute(query, context_value=context_value, variable_values=variable_values)
     print(resp, flush=True)
@@ -132,8 +132,8 @@ async def test_external_ids():
 
     data = resp.data
 
-    assert data['externalIds'][0]['innerId'] == row['inner_id']
-    assert data['externalIds'][0]['outerId'] == row['outer_id']
+    assert data['externalIds'][0]['innerId'] == f"{row['inner_id']}"
+    assert data['externalIds'][0]['outerId'] == f"{row['outer_id']}"
 
 
 @pytest.mark.asyncio
@@ -145,10 +145,10 @@ async def test_internal_ids():
     table = data['externalids']
     row = table[0]
     print(row, flush=True)
-    query = '''query($id: String! $type_id: ID!){
+    query = '''query($id: String! $type_id: UUID!){
         internalId(outerId: $id typeidId: $type_id) }'''
 
-    variable_values = {"id": row['outer_id'], "type_id": row["typeid_id"]}
+    variable_values = {"id": f"{row['outer_id']}", "type_id": f"{row['typeid_id']}"}
     context_value = await createContext(async_session_maker)
     resp = await schema.execute(query, context_value=context_value, variable_values=variable_values)
 
@@ -156,7 +156,7 @@ async def test_internal_ids():
     data = resp.data
     print(data, flush=True)
 
-    assert data['internalId'] == row['inner_id']
+    assert data['internalId'] == f"{row['inner_id']}"
 
 
 
@@ -167,10 +167,10 @@ async def test_representation_externalid():
 
     data = get_demodata()
 
-    id = data['externalids'][0]['id']
+    id = f"{data['externalids'][0]['id']}"
 
     query = '''
-            query($id: ID!) {
+            query($id: UUID!) {
                 _entities(representations: [{ __typename: "ExternalIdGQLModel", id: $id }]) {
                     ...on ExternalIdGQLModel {
                         id
@@ -293,13 +293,13 @@ async def test_group_add_external_id():
     data = get_demodata()
     table = data['groups']
     row = table[0]
-    id = row['id']
+    id = f"{row['id']}"
 
     query = '''
             mutation(
-                $inner_id: ID!
-                $typeid_id: ID!
-                $outer_id: ID!
+                $inner_id: UUID!
+                $typeid_id: UUID!
+                $outer_id: String!
             ) {
                 result: externalidInsert(externalid: {
                     innerId: $inner_id
@@ -312,7 +312,7 @@ async def test_group_add_external_id():
                         id
                         innerId
                         outerId
-                        idType {
+                        type {
                             id
                         }
                     }
@@ -321,7 +321,7 @@ async def test_group_add_external_id():
         '''
 
     context_value = await createContext(async_session_maker)
-    variable_values = {'inner_id': id, 'outer_id': '999', 'typeid_id': data['externalidtypes'][0]['id']}
+    variable_values = {'inner_id': id, 'outer_id': '999', 'typeid_id': f"{data['externalidtypes'][0]['id']}"}
     resp = await schema.execute(query, context_value=context_value, variable_values=variable_values)
     assert resp.errors is None
 
@@ -397,6 +397,6 @@ test_externalidcategory_reference = createResolveReferenceTest("externalidcatego
 test_externalidtype_reference = createResolveReferenceTest("externalidtypes", "ExternalIdTypeGQLModel", subEntities=["nameEn"])
 test_externalid_reference = createResolveReferenceTest("externalids", "ExternalIdGQLModel", ["id", "lastchange"], subEntities=["typeName"])
 
-test_externaltypeid_byId = createByIdTest("externalidtypes", "externalidtypeById", ["id", "name"])
+# test_externaltypeid_byId = createByIdTest("externalidtypes", "externalidtypeById", ["id", "name"])
 # test_user_representation = createResolveReferenceTest("users", "UserGQLModel", ["id"])
 # test_group_representation = createResolveReferenceTest("groups", "GroupGQLModel", ["id"])

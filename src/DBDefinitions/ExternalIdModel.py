@@ -1,4 +1,6 @@
 import sqlalchemy
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import (
     Column,
@@ -21,3 +23,5 @@ class ExternalIdModel(BaseModel):
     lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now())
     changedby = UUIDFKey(nullable=True)#Column(ForeignKey("users.id"), index=True, nullable=True)
     createdby = UUIDFKey(nullable=True)#Column(ForeignKey("users.id"), index=True, nullable=True)
+
+    type = relationship("ExternalIdTypeModel", viewonly=True)    
