@@ -42,7 +42,7 @@ class UserGQLModel:
             return None
         return UserGQLModel(id=id)
 
-    external_ids
+    external_ids = external_ids
 
 
 @strawberry.federation.type(extend=True, keys=["id"])
@@ -54,7 +54,7 @@ class GroupGQLModel:
     async def resolve_reference(cls, id: IDType):
         return GroupGQLModel(id=id)
 
-    external_ids
+    external_ids = external_ids
 
 @strawberry.federation.type(extend=True, keys=["id"])
 class EventGQLModel:
@@ -65,7 +65,7 @@ class EventGQLModel:
     async def resolve_reference(cls, id: IDType):
         return EventGQLModel(id=id)
 
-    external_ids
+    external_ids = external_ids
 
 @strawberry.federation.type(extend=True, keys=["id"])
 class FacilityGQLModel:
@@ -76,4 +76,4 @@ class FacilityGQLModel:
     async def resolve_reference(cls, id: IDType):
         return FacilityGQLModel(id=id)
 
-    external_ids    
+    external_ids = external_ids
