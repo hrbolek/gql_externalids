@@ -22,6 +22,14 @@ def getLoadersFromInfo(info):
 #
 ###########################################################################################################################
 
+@strawberry.field(description="""All related external ids""")
+async def external_ids(
+    self, info: strawberry.types.Info
+) -> List["ExternalIdGQLModel"]:
+
+    loader = ExternalIdGQLModel.getLoader(info=info)
+    result = await loader.filter_by(inner_id=self.id)    
+    return result
 
 @strawberry.federation.type(extend=True, keys=["id"])
 class UserGQLModel:
@@ -34,14 +42,7 @@ class UserGQLModel:
             return None
         return UserGQLModel(id=id)
 
-    @strawberry.field(description="""All external ids related to the user""")
-    async def external_ids(
-        self, info: strawberry.types.Info
-    ) -> List["ExternalIdGQLModel"]:
-
-        loader = getLoadersFromInfo(info=info).externalids_inner_id
-        result = await loader.load(self.id)    
-        return result
+    external_ids
 
 
 @strawberry.federation.type(extend=True, keys=["id"])
@@ -53,10 +54,26 @@ class GroupGQLModel:
     async def resolve_reference(cls, id: IDType):
         return GroupGQLModel(id=id)
 
-    @strawberry.field(description="""All external ids related to a group""")
-    async def external_ids(
-        self, info: strawberry.types.Info
-    ) -> List["ExternalIdGQLModel"]:
-        loader = getLoadersFromInfo(info=info).externalids_inner_id
-        result = await loader.load(self.id)    
-        return result
+    external_ids
+
+@strawberry.federation.type(extend=True, keys=["id"])
+class EventGQLModel:
+
+    id: IDType = strawberry.federation.field(external=True)
+
+    @classmethod
+    async def resolve_reference(cls, id: IDType):
+        return GroupGQLModel(id=id)
+
+    external_ids
+
+@strawberry.federation.type(extend=True, keys=["id"])
+class FacilityGQLModel:
+
+    id: IDType = strawberry.federation.field(external=True)
+
+    @classmethod
+    async def resolve_reference(cls, id: IDType):
+        return GroupGQLModel(id=id)
+
+    external_ids    
