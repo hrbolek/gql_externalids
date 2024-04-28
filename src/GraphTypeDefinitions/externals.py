@@ -63,7 +63,7 @@ class EventGQLModel:
 
     @classmethod
     async def resolve_reference(cls, id: IDType):
-        return GroupGQLModel(id=id)
+        return EventGQLModel(id=id)
 
     external_ids
 
@@ -74,6 +74,6 @@ class FacilityGQLModel:
 
     @classmethod
     async def resolve_reference(cls, id: IDType):
-        return GroupGQLModel(id=id)
+        return FacilityGQLModel(id=id)
 
     external_ids    
