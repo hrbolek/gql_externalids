@@ -190,20 +190,20 @@ import requests
 def ReadAllRoles():
     GQLUG_ENDPOINT_URL = os.environ.get("GQLUG_ENDPOINT_URL", None)
 
-    query = """query {roleTypePage(limit: 1000) {id, name, nameEn}}"""
+    query = """query {result: roleTypePage(limit: 1000) {id, name, nameEn}}"""
     variables = {}
 
     json = {"query": query, "variables": variables}
     response = requests.post(url=GQLUG_ENDPOINT_URL, json=json)
     respJson = response.json()
 
-    assert respJson.get("errors", None) is None, respJson["errors"]
+    assert respJson.get("errors", None) is None, f'GQL response has errors: {respJson["errors"]}'
     respdata = respJson.get("data", None)
     assert respdata is not None, "during roles reading roles have not been readed"
-    roles = respdata.get("roles", None)
+    roles = respdata.get("result", None)
     assert roles is not None, "during roles reading roles have not been readed"
     print("roles", roles)
-    roles = list(map(lambda item: {**item, "nameEn": item["name_ne"]}, roles))
+    roles = list(map(lambda item: {**item, "name_en": item["nameEn"]}, roles))
     return [*roles]
 
 if not isDEMO:
