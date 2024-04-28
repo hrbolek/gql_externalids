@@ -68,7 +68,17 @@ class ExternalIdGQLModel:
     async def type_name(self, info: strawberry.types.Info) -> Optional[str]:
         result = await ExternalIdTypeGQLModel.resolve_reference(info=info, id=self.typeid_id)
         return None if result is None else result.name
-    
+
+    @strawberry.field(description="""html link""")
+    async def link(self, info: strawberry.types.Info) -> Optional[str]:
+        result = None
+        type_id = await ExternalIdTypeGQLModel.resolve_reference(info=info, id=self.typeid_id)
+        if type_id:
+            format = type_id.urlformat
+            if format:
+                result = format % (self.outer_id)
+        return result
+
 #####################################################################
 #
 # Special fields for query
