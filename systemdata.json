@@ -68,7 +68,7 @@
             "id": "93a352ea-3bdb-47f5-a120-bcf3c6e44bbf",
             "name": "MojeAP-Učitel",
             "name_en": "UCO",
-            "urlformat": "https://apl.unob.cz/MojeAP/Uco/%s",
+            "urlformat": "https://apl.unob.cz/MojeAP/Vyucujici/%s",
             "category_id": "0ee3a92d-971f-499a-956f-ca6edb8d6094"
         },
         {
@@ -83,6 +83,13 @@
             "name": "MojeAP-Program",
             "name_en": "UCO",
             "urlformat": "https://apl.unob.cz/MojeAP/Program/%s",
+            "category_id": "0ee3a92d-971f-499a-956f-ca6edb8d6094"
+        },
+        {
+            "id": "768cfa05-acaa-44e2-ae11-f08b6b2d3174",
+            "name": "MojeAP-Program-Garanti",
+            "name_en": "",
+            "urlformat": "",
             "category_id": "0ee3a92d-971f-499a-956f-ca6edb8d6094"
         },
         {
