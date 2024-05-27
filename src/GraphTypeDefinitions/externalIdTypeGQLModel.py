@@ -80,6 +80,14 @@ externalidtype_page = strawberry.field(
     resolver=DBResolvers.ExternalIdTypeModel.resolve_page(ExternalIdTypeGQLModel, WhereFilterModel=ExternalidTypeInputWhereFilter)
     )
 
+externalidtype_by_id = strawberry.field(
+    description="externaltypeid by primary key",
+    permission_classes=[
+        OnlyForAuthentized
+    ],
+    resolver=DBResolvers.ExternalIdTypeModel.resolve_by_id(ExternalIdTypeGQLModel)
+    )
+
 #####################################################################
 #
 # Mutation section

@@ -68,6 +68,15 @@ externalidcategory_page = strawberry.field(
     resolver=DBResolvers.ExternalIdCategoryModel.resolve_page(ExternalIdCategoryGQLModel, WhereFilterModel=ExternalidCategoryInputWhereFilter)
     )
 
+externalidcategory_by_id = strawberry.field(
+    description="externalcategoryid by primary key",
+    permission_classes=[
+        OnlyForAuthentized
+    ],
+    resolver=DBResolvers.ExternalIdCategoryModel.resolve_by_id(ExternalIdCategoryGQLModel)
+    )
+
+
 #####################################################################
 #
 # Mutation section
