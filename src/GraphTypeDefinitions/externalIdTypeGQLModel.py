@@ -103,7 +103,7 @@ class ExternalIdTypeInsertGQLModel:
     urlformat: Optional[str] = strawberry.field(default=None, description="Format for conversion of id into url link")
     id: Optional[IDType] = strawberry.field(default=None, description="Could be uuid primary key")
     category_id: Optional[IDType] = strawberry.field(default=None, description="Category of type")
-    createdby: strawberry.Private[IDType]
+    createdby: strawberry.Private[IDType] = None
 
 @strawberry.input(description="")
 class ExternalIdTypeUpdateGQLModel:
@@ -113,7 +113,7 @@ class ExternalIdTypeUpdateGQLModel:
     name_en: Optional[str] = strawberry.field(default=None, description="En name of type")
     urlformat: Optional[str] = strawberry.field(default=None, description="Format for conversion of id into url link")
     category_id: Optional[IDType] = strawberry.field(default=None, description="Category of type")
-    changedby: strawberry.Private[IDType]
+    changedby: strawberry.Private[IDType] = None
     
 @strawberry.type(description="")
 class ExternalIdTypeResultGQLModel:
