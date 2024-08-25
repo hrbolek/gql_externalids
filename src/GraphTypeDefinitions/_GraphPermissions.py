@@ -285,7 +285,7 @@ from src.Dataloaders import (
     getUserFromInfo
     )
 
-from strawberry.type import StrawberryList
+from strawberry.types import StrawberryList
 class OnlyForAuthentized(strawberry.permission.BasePermission):
     message = "User is not authenticated"
 
