@@ -107,8 +107,8 @@ def get_demodata():
 
 async def initDB(asyncSessionMaker):
 
-    defaultNoDemo = "False"
-    if defaultNoDemo == os.environ.get("DEMODATA", defaultNoDemo):
+    isDemo =  os.environ.get("DEMODATA", None) in ["False", "false"]
+    if isDemo:
         dbModels = [
             ExternalIdCategoryModel,
             ExternalIdTypeModel,
