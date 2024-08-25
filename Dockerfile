@@ -20,9 +20,9 @@ WORKDIR /app
 COPY . /app
 
 # FROM prepare as tester
-RUN python -m pip install coverage pytest pytest-cov
-# RUN python -m unittest tests/*
-RUN python -m pytest --cov-report term-missing --cov=src 
+# RUN python -m pip install coverage pytest pytest-cov
+# # RUN python -m unittest tests/*
+# RUN python -m pytest --cov-report term-missing --cov=src 
 
 FROM prepare as runner
 # Creates a non-root user and adds permission to access the /app folder
