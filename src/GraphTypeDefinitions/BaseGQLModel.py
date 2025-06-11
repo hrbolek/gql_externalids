@@ -55,7 +55,7 @@ class BaseGQLModel:
         return cls(id=id) if db_row is None else cls.from_dataclass(db_row=db_row)
     
     @classmethod
-    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID, **otherdata):
+    async def resolve_reference(cls, info: strawberry.types.Info, id: uuid.UUID):
         _id = IDType(id) if isinstance(id, str) else id
         return await cls.load_with_loader(info=info, id=_id)
        

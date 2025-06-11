@@ -15,25 +15,10 @@ from uoishelpers.resolvers import (
     Delete, DeleteError
 
 )
+from uoishelpers.gqlpermissions import OnlyForAuthentized
 
-from src.Dataloaders import getLoadersFromInfo, getUserFromInfo
-from .BaseGQLModel import BaseGQLModel
-
-from ._GraphPermissions import OnlyForAuthentized
-from ._GraphResolvers import (
-    resolve_reference,
-    resolve_id,
-    resolve_createdby,
-    resolve_changedby,
-    resolve_lastchange,
-    resolve_created,
-
-    encapsulateInsert,
-    encapsulateUpdate,
-    encapsulateDelete,
-
-    IDType
-)
+from src.Dataloaders import getLoadersFromInfo
+from .BaseGQLModel import BaseGQLModel, IDType
 
 from .externalIdTypeGQLModel import ExternalIdTypeGQLModel
 
@@ -62,8 +47,6 @@ class ExternalIdGQLModel(BaseGQLModel):
     @classmethod
     def getLoader(cls, info: strawberry.types.Info):
         return getLoadersFromInfo(info=info).ExternalIdModel
-
-    resolve_reference = resolve_reference    
 
     inner_id: typing.Optional[IDType] = strawberry.field(description="""Inner id""")
     outer_id: typing.Optional[IDType] = strawberry.field(description="""Outer id""")
@@ -104,7 +87,6 @@ class ExternalidInputWhereFilter:
 
 @strawberry.interface()
 class ExternalIdsQuery:
-
 
     @strawberry.field(
         description="""Returns inner id based on external id type and external id value""",
@@ -151,9 +133,10 @@ class ExternalIdsQuery:
 # Mutation section
 #
 #####################################################################
+from .utils import InputModelMixin
 
 @strawberry.input(description="")
-class ExternalIdInsertGQLModel:
+class ExternalIdInsertGQLModel(InputModelMixin):
     inner_id: IDType = strawberry.field(default=None, description="Primary key of entity which new outeid is assigned")
     typeid_id: IDType = strawberry.field(default=None, description="Type of external id")
     outer_id: str = strawberry.field(default=None, description="Key used by other systems")

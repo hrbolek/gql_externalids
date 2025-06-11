@@ -1,10 +1,7 @@
 import strawberry
-from typing import List
+import typing
 
 from .externalIdGQLModel import ExternalIdGQLModel
-from ._GraphResolvers import IDType
-def getLoadersFromInfo(info):
-    return info.context["all"]
 
 ###########################################################################################################################
 #
@@ -25,7 +22,7 @@ def getLoadersFromInfo(info):
 @strawberry.field(description="""All related external ids""")
 async def external_ids(
     self, info: strawberry.types.Info
-) -> List["ExternalIdGQLModel"]:
+) -> typing.List["ExternalIdGQLModel"]:
 
     loader = ExternalIdGQLModel.getLoader(info=info)
     result = await loader.filter_by(inner_id=self.id)    

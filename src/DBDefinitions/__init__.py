@@ -1,5 +1,5 @@
 import sqlalchemy
-from .Base import BaseModel
+from .BaseModel import BaseModel
 
 ###########################################################################################################################
 #
@@ -8,11 +8,8 @@ from .Base import BaseModel
 #
 ###########################################################################################################################
 
-from .ExternalIdCategoryModel import ExternalIdCategoryModel
 from .ExternalIdTypeModel import ExternalIdTypeModel
 from .ExternalIdModel import ExternalIdModel
-
-
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

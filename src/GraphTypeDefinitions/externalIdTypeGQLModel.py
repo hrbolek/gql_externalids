@@ -14,25 +14,17 @@ from uoishelpers.resolvers import (
     Update, UpdateError,
     Delete, DeleteError
 )
+from uoishelpers.gqlpermissions import OnlyForAuthentized
+from .BaseGQLModel import BaseGQLModel, IDType
 
-from .BaseGQLModel import BaseGQLModel
+from src.Dataloaders import getLoadersFromInfo
 
-from src.Dataloaders import getLoadersFromInfo, getUserFromInfo
-from ._GraphPermissions import OnlyForAuthentized
-from ._GraphResolvers import (
-    resolve_reference,
+@createInputs2
+class ExternalidTypeInputWhereFilter:
+    id: IDType
+    name: str
+    name_en: str
 
-    resolve_name,
-    resolve_name_en,
-
-    encapsulateInsert,
-    encapsulateUpdate,
-    encapsulateDelete,
-
-    IDType
-)
-
-UserGQLModel = Annotated["UserGQLModel", strawberry.lazy(".externals")]
 
 @strawberry.federation.type(
     keys=["id"],
@@ -43,9 +35,28 @@ class ExternalIdTypeGQLModel(BaseGQLModel):
     def getLoader(cls, info: strawberry.types.Info):
         return getLoadersFromInfo(info=info).ExternalIdTypeModel
 
-    resolve_reference = resolve_reference    
-    name = resolve_name
-    name_en = resolve_name_en
+    name: typing.Optional[str] = strawberry.field(
+        description="",
+        permission_classes=[],
+        default=None
+    )
+    name_en: typing.Optional[str] = strawberry.field(
+        description="",
+        permission_classes=[],
+        default=None
+    )
+
+    master_id: typing.Optional[IDType] = strawberry.field(
+        description="who changed this entity", 
+        default=None,
+        permission_classes=[OnlyForAuthentized]
+        )
+
+    urlformat: typing.Optional[str] = strawberry.field(
+        description="",
+        permission_classes=[],
+        default=None
+    )
 
     master_type: typing.Optional["ExternalIdTypeGQLModel"] = strawberry.field(
         permission_classes=[],
@@ -56,7 +67,7 @@ class ExternalIdTypeGQLModel(BaseGQLModel):
     sub_types: typing.List["ExternalIdTypeGQLModel"] = strawberry.field(
         permission_classes=[],
         description="subtypes",
-        resolver=VectorResolver["ExternalIdTypeGQLModel"](fkey_field_name="master_id")
+        resolver=VectorResolver["ExternalIdTypeGQLModel"](fkey_field_name="master_id", whereType=ExternalidTypeInputWhereFilter)
     )
 
 
@@ -66,21 +77,15 @@ class ExternalIdTypeGQLModel(BaseGQLModel):
 #
 #####################################################################
 
-@createInputs2
-class ExternalidTypeInputWhereFilter:
-    id: IDType
-    name: str
-    name_en: str
-
 @strawberry.interface(description="Base External type queries")
 class ExternalIdTypeQuery:
-    externalidType_page = strawberry.field(
+    externalidType_page: typing.List[ExternalIdTypeGQLModel] = strawberry.field(
         description="page of types",
         permission_classes=[],
         resolver=PageResolver[ExternalIdTypeGQLModel](whereType=ExternalidTypeInputWhereFilter)
     )
 
-    externalidType_by_id = strawberry.field(
+    externalidType_by_id: typing.Optional[ExternalIdTypeGQLModel] = strawberry.field(
         description="type by its id",
         permission_classes=[],
         resolver=ExternalIdTypeGQLModel.resolve_reference
@@ -93,15 +98,21 @@ class ExternalIdTypeQuery:
 #####################################################################
 
 import datetime
+from .utils import InputModelMixin
 
 @strawberry.input(description="")
-class ExternalIdTypeInsertGQLModel:
+class ExternalIdTypeInsertGQLModel(InputModelMixin):
+    getLoader = ExternalIdTypeGQLModel.getLoader
+
     name: str = strawberry.field(default=None, description="Name of type")
     name_en: Optional[str] = strawberry.field(default=None, description="En name of type")
     id: Optional[IDType] = strawberry.field(default=None, description="Could be uuid primary key")
     master_id: Optional[IDType] = strawberry.field(default=None, description="master")
-
-    createdby: strawberry.Private[IDType]
+    sub_types: typing.Optional[typing.List["ExternalIdTypeInsertGQLModel"]] = strawberry.field(
+        description="",
+        default_factory=list
+    )
+    createdby: strawberry.Private[IDType] = None
 
 @strawberry.input(description="")
 class ExternalIdTypeUpdateGQLModel:
@@ -109,7 +120,7 @@ class ExternalIdTypeUpdateGQLModel:
     lastchange: datetime.datetime = strawberry.field(default=None, description="Timestamp")
     name: Optional[str] = strawberry.field(default=None, description="Name of type")
     name_en: Optional[str] = strawberry.field(default=None, description="En name of type")
-    changedby: strawberry.Private[IDType]
+    changedby: strawberry.Private[IDType] = None
     
 @strawberry.input(description="")
 class ExternalIdTypeDeleteGQLModel:
@@ -129,8 +140,10 @@ class ExternalIdTypeMutation:
         info: strawberry.types.Info, 
         externalidtype: ExternalIdTypeInsertGQLModel
     ) -> typing.Union[ExternalIdTypeGQLModel, InsertError[ExternalIdTypeGQLModel]]:
+        print(strawberry.asdict(externalidtype), flush=True)
+        modelinstance = externalidtype.intoModel(info=info)
         return await Insert[ExternalIdTypeGQLModel].DoItSafeWay(
-            info=info, entity=externalidtype
+            info=info, entity=modelinstance
         )
 
     @strawberry.mutation(
