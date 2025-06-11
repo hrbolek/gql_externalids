@@ -15,10 +15,10 @@ class Mutation:
     from.externalIdTypeGQLModel import externaltypeid_update
     externaltypeid_update = externaltypeid_update
     
-    from .externalIdCategoryGQLModel import externalidcategory_insert
+    from .externalIdTypeGQLModel import externalidcategory_insert
     externalidcategory_insert = externalidcategory_insert
 
-    from .externalIdCategoryGQLModel import externalidcategory_update
+    from .externalIdTypeGQLModel import externalidcategory_update
     externalidcategory_update = externalidcategory_update
     
     pass

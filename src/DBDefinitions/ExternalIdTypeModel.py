@@ -1,29 +1,33 @@
 import sqlalchemy
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+
 from sqlalchemy import (
-    Column,
-    String,
-    DateTime,
     ForeignKey,
 )
-from .UUID import UUIDColumn, UUIDFKey
-from .Base import BaseModel
+from .BaseModel import BaseModel, IDType
 
 class ExternalIdTypeModel(BaseModel):
     __tablename__ = "externalidtypes"
 
-    id = UUIDColumn()
-    name = Column(String)
-    name_en = Column(String)
-    urlformat = Column(String)
+    name: Mapped[str] = mapped_column(default=None, nullable=True)
+    name_en: Mapped[str] = mapped_column(default=None, nullable=True)
+    urlformat: Mapped[str] = mapped_column(default=None, nullable=True)
 
-    category_id = Column(ForeignKey("externalidcategories.id"), index=True, nullable=True)
+    master_id: Mapped[IDType] = mapped_column(ForeignKey("externalidcategories.id"), index=True, default=None, nullable=True)
 
-    created = Column(DateTime, server_default=sqlalchemy.sql.func.now())
-    lastchange = Column(DateTime, server_default=sqlalchemy.sql.func.now())
-    changedby = UUIDFKey(nullable=True)#Column(ForeignKey("users.id"), index=True, nullable=True)
-    createdby = UUIDFKey(nullable=True)#Column(ForeignKey("users.id"), index=True, nullable=True)
+    master_type = relationship(
+        "ExternalIdTypeModel", 
+        viewonly=True, 
+        uselist=False,
+        remote_side="ExternalIdTypeModel.id",
+        back_populates="sub_types"
+    )
 
-    category = relationship("ExternalIdCategoryModel", viewonly=True)
-    ids = relationship("ExternalIdModel", viewonly=True)    
+    sub_types = relationship(
+        "ExternalIdTypeModel", 
+        viewonly=True, 
+        uselist=True,
+        back_populates="master_type"
+    )
+
+    external_ids = relationship("ExternalIdModel", viewonly=True)    
